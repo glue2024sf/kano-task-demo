@@ -6,25 +6,26 @@
 <title>タスク管理デモ｜加納経営事務所</title>
 <style>
   :root{
-    --sf-blue:#0b5cab; --sf-blue-d:#084a8a; --bg:#f3f6f9; --card:#ffffff;
-    --line:#d8dde6; --ink:#16325c; --muted:#5e6c84; --accent:#0176d3;
-    --p1:#ba0517; --p2:#fe9339; --p3:#2e844a; --done:#04844b;
+    --sf-blue:#0b5cab; --bg:#f3f6f9; --card:#fff; --line:#d8dde6; --ink:#16325c;
+    --muted:#5e6c84; --accent:#0176d3; --p1:#ba0517; --p2:#fe9339; --p3:#2e844a;
+    --run:#0b7a3b; --pause:#a85b00; --done:#7a869a;
+    --t-out:#7e3ff2; --t-in:#0176d3; --t-mtg:#e8650d;
   }
   *{box-sizing:border-box;}
   body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic UI","Segoe UI",sans-serif;
     background:var(--bg);color:var(--ink);font-size:13px;}
-  /* ===== Header ===== */
-  header{background:var(--sf-blue);color:#fff;padding:10px 18px;display:flex;align-items:center;gap:16px;
-    box-shadow:0 2px 4px rgba(0,0,0,.15);}
-  header .logo{font-weight:700;font-size:15px;letter-spacing:.5px;display:flex;align-items:center;gap:8px;}
+  /* Header */
+  header{background:var(--sf-blue);color:#fff;padding:10px 18px;display:flex;align-items:center;gap:14px;
+    box-shadow:0 2px 4px rgba(0,0,0,.15);flex-wrap:wrap;}
+  header .logo{font-weight:700;font-size:15px;display:flex;align-items:center;gap:8px;}
   header .logo .dot{width:22px;height:22px;border-radius:5px;background:#fff;color:var(--sf-blue);
     display:flex;align-items:center;justify-content:center;font-weight:800;}
   header .crumb{opacity:.85;font-size:12px;}
   header .spacer{flex:1;}
   header .who{font-size:12px;opacity:.9;}
-  /* ===== Toolbar ===== */
+  /* Toolbar */
   .toolbar{background:#fff;border-bottom:1px solid var(--line);padding:10px 18px;display:flex;
-    align-items:center;gap:14px;flex-wrap:wrap;}
+    align-items:center;gap:12px;flex-wrap:wrap;}
   .toolbar h1{font-size:16px;margin:0;font-weight:700;}
   .date-nav{display:flex;align-items:center;gap:6px;}
   .date-nav button{border:1px solid var(--line);background:#fff;border-radius:5px;width:28px;height:28px;
@@ -32,69 +33,94 @@
   .date-nav .cur{font-weight:700;font-size:14px;padding:0 6px;min-width:150px;text-align:center;}
   .toolbar .spacer{flex:1;}
   .pill{background:#eef4fb;color:var(--accent);border-radius:14px;padding:5px 12px;font-weight:600;font-size:12px;}
-  /* ===== Layout ===== */
+  .btn{border:1px solid var(--accent);background:var(--accent);color:#fff;border-radius:6px;padding:7px 12px;
+    font-size:12.5px;font-weight:700;cursor:pointer;}
+  .btn.ghost{background:#fff;color:var(--accent);}
+  /* Layout */
   .wrap{display:grid;grid-template-columns:380px 1fr;gap:14px;padding:14px 18px;height:calc(100vh - 104px);}
   .panel{background:var(--card);border:1px solid var(--line);border-radius:8px;display:flex;flex-direction:column;
-    overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.04);}
+    overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.04);min-height:0;}
   .panel-head{padding:11px 14px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px;}
   .panel-head h2{font-size:14px;margin:0;font-weight:700;}
   .panel-head .count{background:#e8eef5;color:var(--muted);border-radius:10px;padding:1px 8px;font-size:11px;font-weight:600;}
-  .panel-body{overflow-y:auto;padding:10px;flex:1;}
-  /* ===== Filters ===== */
-  .filters{padding:10px 12px;border-bottom:1px solid var(--line);display:flex;gap:8px;flex-wrap:wrap;background:#fafcfe;}
-  .filters select,.filters input{border:1px solid var(--line);border-radius:5px;padding:5px 8px;font-size:12px;
+  .panel-head .hint{font-size:11px;color:var(--muted);margin-left:auto;}
+  .panel-body{overflow-y:auto;padding:10px;flex:1;min-height:0;}
+  /* Filters */
+  .filters{padding:8px 12px;border-bottom:1px solid var(--line);display:flex;gap:7px;flex-wrap:wrap;background:#fafcfe;}
+  .filters select,.filters input{border:1px solid var(--line);border-radius:5px;padding:5px 7px;font-size:12px;
     background:#fff;color:var(--ink);}
-  .filters input[type=search]{flex:1;min-width:120px;}
-  /* ===== Task card ===== */
+  .filters input[type=search]{flex:1;min-width:110px;}
+  /* Task card (left) */
   .task{background:#fff;border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:6px;
-    padding:9px 10px;margin-bottom:8px;cursor:grab;transition:box-shadow .12s,transform .12s;}
+    padding:9px 10px;margin-bottom:8px;cursor:grab;transition:box-shadow .12s;}
   .task:hover{box-shadow:0 3px 8px rgba(11,92,171,.16);}
   .task.dragging{opacity:.5;}
-  .task.p1{border-left-color:var(--p1);}
-  .task.p2{border-left-color:var(--p2);}
-  .task.p3{border-left-color:var(--p3);}
-  .task .t-top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;}
+  .task.p1{border-left-color:var(--p1);} .task.p2{border-left-color:var(--p2);} .task.p3{border-left-color:var(--p3);}
   .task .t-title{font-weight:700;font-size:13px;line-height:1.35;}
   .task .t-acct{color:var(--accent);font-size:11px;margin-top:2px;font-weight:600;}
   .task .t-meta{display:flex;gap:6px;margin-top:7px;flex-wrap:wrap;align-items:center;}
+  .task .t-foot{display:flex;gap:6px;margin-top:8px;align-items:center;flex-wrap:wrap;}
   .badge{font-size:10.5px;padding:2px 7px;border-radius:10px;background:#eef2f7;color:var(--muted);font-weight:600;}
-  .badge.work{background:#e9f3ff;color:#0b5cab;}
-  .badge.pri-1{background:#fde7e9;color:var(--p1);}
-  .badge.pri-2{background:#fff1e0;color:#a85b00;}
-  .badge.pri-3{background:#e3f3e9;color:var(--p3);}
-  .est{display:flex;align-items:center;gap:4px;margin-left:auto;}
+  .badge.work{background:#eef2f7;color:#52617a;}
+  .badge.pri-1{background:#fde7e9;color:var(--p1);} .badge.pri-2{background:#fff1e0;color:#a85b00;} .badge.pri-3{background:#e3f3e9;color:var(--p3);}
+  .badge.type-外出{background:#f3ecfe;color:var(--t-out);} .badge.type-社内{background:#e9f3ff;color:var(--t-in);} .badge.type-会議{background:#fdeee2;color:var(--t-mtg);}
+  .badge.carry{background:#fff3cd;color:#8a6d00;border:1px solid #f0e0a0;}
+  .est{display:flex;align-items:center;gap:3px;}
   .est label{font-size:10.5px;color:var(--muted);}
-  .est input{width:42px;border:1px solid var(--line);border-radius:4px;padding:2px 4px;font-size:11px;text-align:right;}
+  .est input{width:48px;border:1px solid var(--line);border-radius:4px;padding:2px 4px;font-size:11px;text-align:right;}
   .est span{font-size:10.5px;color:var(--muted);}
-  /* ===== Timeline ===== */
-  .timeline{position:relative;}
-  .slot{display:grid;grid-template-columns:54px 1fr;border-top:1px dashed #e3e8ef;min-height:54px;}
-  .slot:first-child{border-top:none;}
-  .slot .hr{font-size:11px;color:var(--muted);padding:4px 8px;text-align:right;border-right:1px solid #eef1f5;}
-  .slot .drop{padding:5px 8px;display:flex;flex-direction:column;gap:5px;transition:background .12s;}
-  .slot .drop.over{background:#eaf4ff;outline:2px dashed var(--accent);outline-offset:-3px;border-radius:5px;}
-  .sched{background:#fff;border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:6px;
-    padding:7px 9px;cursor:grab;display:flex;justify-content:space-between;align-items:center;gap:8px;}
+  .mini{border:1px solid var(--line);background:#fff;border-radius:5px;padding:3px 7px;font-size:11px;cursor:pointer;color:var(--ink);}
+  .mini:hover{background:#f3f6f9;}
+  .assign-sel{border:1px solid var(--line);border-radius:5px;padding:3px 5px;font-size:11px;color:var(--ink);background:#fff;}
+  /* Timeline (right) */
+  .tl-wrap{position:relative;}
+  .timeline{position:relative;margin-left:52px;}
+  .gl{position:absolute;left:0;right:0;border-top:1px solid #eef1f5;}
+  .gl.q{border-top:1px dashed #f1f4f8;}
+  .gl .lbl{position:absolute;left:-52px;top:-8px;width:46px;text-align:right;font-size:11px;color:var(--muted);}
+  .sched{position:absolute;border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:6px;
+    padding:5px 7px;cursor:grab;background:#fff;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.07);}
   .sched.p1{border-left-color:var(--p1);} .sched.p2{border-left-color:var(--p2);} .sched.p3{border-left-color:var(--p3);}
-  .sched.done{opacity:.55;}
-  .sched .s-title{font-weight:700;font-size:12.5px;}
+  .sched.running{box-shadow:0 0 0 2px rgba(11,122,59,.4);}
+  .sched.paused{background:#fffbf0;}
+  .sched.done{background:#f7f9fb;opacity:.7;}
+  .sched .s-title{font-weight:700;font-size:12px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .sched.done .s-title{text-decoration:line-through;}
-  .sched .s-acct{color:var(--accent);font-size:10.5px;font-weight:600;}
-  .sched .s-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
-  .sched .s-dur{font-size:11px;color:var(--muted);font-weight:600;white-space:nowrap;}
-  .sched .s-act{display:flex;gap:4px;}
-  .sched .s-act button{border:none;background:transparent;cursor:pointer;font-size:14px;line-height:1;padding:2px;color:var(--muted);}
-  .sched .s-act button:hover{color:var(--ink);}
-  /* ===== Right summary footer ===== */
-  .summary{border-top:1px solid var(--line);padding:10px 14px;display:flex;gap:18px;align-items:center;background:#fafcfe;}
-  .summary .k{font-size:11px;color:var(--muted);}
-  .summary .v{font-size:16px;font-weight:800;color:var(--ink);}
-  .summary .v.over{color:var(--p1);}
-  .summary .spacer{flex:1;}
+  .sched .s-sub{font-size:10px;color:var(--muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .sched .s-status{font-size:9.5px;font-weight:700;padding:0 5px;border-radius:8px;display:inline-block;}
+  .st-todo{background:#eef2f7;color:#52617a;} .st-running{background:#e3f5ea;color:var(--run);}
+  .st-paused{background:#fff3cd;color:var(--pause);} .st-done{background:#eef1f5;color:var(--done);}
+  .sched .s-act{display:flex;gap:3px;margin-top:4px;flex-wrap:wrap;}
+  .sched .s-act button{border:1px solid var(--line);background:#fff;border-radius:4px;padding:1px 6px;font-size:10px;cursor:pointer;color:var(--ink);}
+  .sched .s-act button.go{border-color:var(--run);color:var(--run);}
+  .sched .s-act button.pa{border-color:var(--pause);color:var(--pause);}
+  .sched .s-act button.fin{border-color:var(--accent);color:var(--accent);}
+  .sched .s-time{font-size:9.5px;color:var(--muted);margin-top:2px;}
+  .tl-drophint{position:absolute;left:0;right:0;height:2px;background:var(--accent);display:none;}
+  /* Summary */
+  .summary{border-top:1px solid var(--line);padding:9px 14px;display:flex;gap:16px;align-items:center;background:#fafcfe;flex-wrap:wrap;}
+  .summary .k{font-size:10.5px;color:var(--muted);} .summary .v{font-size:15px;font-weight:800;}
+  .summary .v.over{color:var(--p1);} .summary .spacer{flex:1;}
   .empty{color:var(--muted);text-align:center;padding:30px 10px;font-size:12px;}
-  /* drop hint on left when dragging back */
   #leftBody.over{background:#eaf4ff;}
   .note{font-size:11px;color:var(--muted);padding:6px 14px;background:#fff8e6;border-top:1px solid #f0e3b8;}
+  /* Modal */
+  .modal-bg{position:fixed;inset:0;background:rgba(22,50,92,.4);display:none;align-items:center;justify-content:center;z-index:50;}
+  .modal-bg.show{display:flex;}
+  .modal{background:#fff;border-radius:10px;width:360px;max-width:92vw;padding:18px;box-shadow:0 10px 40px rgba(0,0,0,.3);}
+  .modal h3{margin:0 0 12px;font-size:15px;}
+  .modal label{display:block;font-size:11.5px;color:var(--muted);margin:8px 0 3px;font-weight:600;}
+  .modal input,.modal select{width:100%;border:1px solid var(--line);border-radius:6px;padding:7px 8px;font-size:13px;color:var(--ink);}
+  .modal .row{display:flex;gap:10px;} .modal .row>div{flex:1;}
+  .modal .acts{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;}
+  /* Responsive — スマホ対応 */
+  @media (max-width:840px){
+    .wrap{grid-template-columns:1fr;height:auto;}
+    .panel{height:auto;}
+    #leftBody{max-height:46vh;}
+    .panel-body.tl-body{max-height:70vh;}
+    .panel-head .hint{display:none;}
+  }
 </style>
 </head>
 <body>
@@ -110,186 +136,300 @@
   <h1>今日のタスク割当</h1>
   <div class="date-nav">
     <button onclick="shiftDay(-1)">‹</button>
-    <span class="cur" id="curDate">2026/6/3（水）</span>
+    <span class="cur" id="curDate"></span>
     <button onclick="shiftDay(1)">›</button>
   </div>
   <span class="spacer"></span>
-  <span class="pill">未割当 <b id="pillUnassigned">0</b> 件</span>
-  <span class="pill">本日 <b id="pillToday">0</b> 件</span>
+  <button class="btn" onclick="openNew()">＋ 新規タスク</button>
+  <span class="pill">未割当 <b id="pillUnassigned">0</b></span>
+  <span class="pill">本日 <b id="pillToday">0</b></span>
 </div>
 
 <div class="wrap">
-  <!-- ===== LEFT: task list ===== -->
+  <!-- LEFT -->
   <section class="panel">
     <div class="panel-head">
       <h2>📋 タスクリスト</h2>
       <span class="count" id="leftCount">0</span>
-      <span style="flex:1"></span>
-      <span style="font-size:11px;color:var(--muted)">未完了・未割当</span>
+      <span class="hint">未完了・未割当／前日からの中断</span>
     </div>
     <div class="filters">
+      <select id="fType" onchange="render()">
+        <option value="">種別（すべて）</option>
+        <option value="外出">外出</option><option value="社内">社内</option><option value="会議">会議</option>
+      </select>
       <select id="fAcct" onchange="render()"><option value="">顧問先（すべて）</option></select>
-      <select id="fWork" onchange="render()"><option value="">作業種別（すべて）</option></select>
       <select id="fPri" onchange="render()">
-        <option value="">優先度（すべて）</option>
-        <option value="1">高</option><option value="2">中</option><option value="3">低</option>
+        <option value="">優先度（すべて）</option><option value="1">高</option><option value="2">中</option><option value="3">低</option>
+      </select>
+      <select id="fSort" onchange="render()">
+        <option value="pri">並:優先度</option><option value="est">並:予定時間</option>
+        <option value="type">並:種別</option><option value="acct">並:顧問先</option>
       </select>
       <input type="search" id="fText" placeholder="件名で検索…" oninput="render()">
     </div>
     <div class="panel-body" id="leftBody"></div>
   </section>
 
-  <!-- ===== RIGHT: daily schedule ===== -->
+  <!-- RIGHT -->
   <section class="panel">
     <div class="panel-head">
       <h2>🗓 日次スケジュール</h2>
       <span class="count" id="rightCount">0</span>
-      <span style="flex:1"></span>
-      <span style="font-size:11px;color:var(--muted)">左からドラッグして時間帯に割当</span>
+      <span class="hint">左からドラッグ、またはカードの「時刻」で割当（15分単位）</span>
     </div>
-    <div class="panel-body"><div class="timeline" id="timeline"></div></div>
+    <div class="panel-body tl-body">
+      <div class="tl-wrap"><div class="timeline" id="timeline"></div></div>
+    </div>
     <div class="summary">
-      <div><div class="k">割当タスク</div><div class="v" id="sumCount">0</div></div>
-      <div><div class="k">予定時間 合計</div><div class="v" id="sumEst">0.0h</div></div>
+      <div><div class="k">割当</div><div class="v" id="sumCount">0</div></div>
+      <div><div class="k">予定 合計</div><div class="v" id="sumEst">0.0h</div></div>
+      <div><div class="k">実績 合計</div><div class="v" id="sumAct" style="color:var(--run)">0.0h</div></div>
       <div><div class="k">完了</div><div class="v" id="sumDone">0</div></div>
       <span class="spacer"></span>
-      <div style="text-align:right"><div class="k">勤務想定 8.0h に対して</div><div class="v" id="sumRemain">—</div></div>
+      <div style="text-align:right"><div class="k">勤務想定 8.0h</div><div class="v" id="sumRemain">—</div></div>
     </div>
   </section>
 </div>
-<div class="note">※ これは仕様合意用のモックアップです。データはサンプルで、実データ・Salesforceとは未接続です。ドラッグ&ドロップ／予定時間の手入力／完了操作をお試しください。</div>
+<div class="note">※ 仕様合意用のモックアップです（サンプルデータ・Salesforce未接続）。①開始/中断/完了 ②新規登録 ③種別ソート ④複製 ⑤0.25h単位 ⑥時間長さ表示 を反映。スマホでもスケジュールが縦に表示され、カードの「時刻」から割当できます（ドラッグはPC推奨）。</div>
+
+<!-- 新規タスク モーダル -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <h3 id="modalTitle">新規タスク</h3>
+    <label>件名</label><input id="mTitle" placeholder="例：請求書チェック">
+    <label>顧問先</label><input id="mAcct" placeholder="例：山田商事株式会社" list="acctList">
+    <datalist id="acctList"></datalist>
+    <div class="row">
+      <div><label>種別</label><select id="mType"><option>社内</option><option>外出</option><option>会議</option></select></div>
+      <div><label>作業種別</label><input id="mWork" placeholder="例：記帳代行"></div>
+    </div>
+    <div class="row">
+      <div><label>優先度</label><select id="mPri"><option value="1">高</option><option value="2" selected>中</option><option value="3">低</option></select></div>
+      <div><label>予定時間(h)</label><input id="mEst" type="number" step="0.25" min="0" value="1.0"></div>
+    </div>
+    <div class="acts">
+      <button class="mini" onclick="closeNew()">キャンセル</button>
+      <button class="btn" onclick="addTask()">追加</button>
+    </div>
+  </div>
+</div>
 
 <script>
+// ===== 設定 =====
+const START_H=8, END_H=19, PX=64;          // タイムライン 8:00-19:00 / 1時間=64px
+const STEP=0.25;                            // 15分単位
+const WORK_TYPES=["月次監査","記帳代行","決算準備","給与計算","年末調整","電話対応","資料作成","訪問"];
+const PRI_LABEL={1:"高",2:"中",3:"低"};
+const TODAY="2026-06-03";
+let curKey=TODAY;
+let seq=100;
+
 // ===== サンプルデータ =====
-const HOURS = [8,9,10,11,12,13,14,15,16,17,18];
-const WORK_TYPES = ["月次監査","記帳代行","決算準備","給与計算","年末調整","電話対応","資料作成","訪問"];
-let tasks = [
-  {id:1, title:"5月度 月次試算表チェック", acct:"山田商事株式会社", work:"月次監査", pri:1, est:1.5, slot:null, done:false},
-  {id:2, title:"請求書データ記帳", acct:"佐藤工務店", work:"記帳代行", pri:2, est:1.0, slot:null, done:false},
-  {id:3, title:"決算スケジュール確認の電話", acct:"株式会社グリーンフーズ", work:"電話対応", pri:1, est:0.5, slot:null, done:false},
-  {id:4, title:"給与計算（6月分）", acct:"田中製作所", work:"給与計算", pri:2, est:1.0, slot:null, done:false},
-  {id:5, title:"年末調整 案内資料の準備", acct:"鈴木リース株式会社", work:"資料作成", pri:3, est:0.5, slot:null, done:false},
-  {id:6, title:"訪問前の資料まとめ", acct:"山田商事株式会社", work:"訪問", pri:2, est:0.5, slot:null, done:false},
-  {id:7, title:"4月度 仕訳の修正対応", acct:"佐藤工務店", work:"記帳代行", pri:1, est:1.0, slot:null, done:false},
-  {id:8, title:"決算準備 残高確認", acct:"株式会社グリーンフーズ", work:"決算準備", pri:1, est:2.0, slot:null, done:false},
-  {id:9, title:"領収書の整理・スキャン", acct:"田中製作所", work:"記帳代行", pri:3, est:0.5, slot:null, done:false},
-  {id:10, title:"顧問先への月次報告メール", acct:"鈴木リース株式会社", work:"資料作成", pri:2, est:0.5, slot:null, done:false},
-  {id:11, title:"源泉所得税の納付確認", acct:"山田商事株式会社", work:"月次監査", pri:1, est:0.5, slot:null, done:false},
-  {id:12, title:"問い合わせ折り返し", acct:"佐藤工務店", work:"電話対応", pri:2, est:0.5, slot:null, done:false},
+let tasks=[
+  mk("5月度 月次試算表チェック","山田商事株式会社","月次監査","社内",1,1.5,TODAY,9.0),
+  mk("決算スケジュール確認の電話","株式会社グリーンフーズ","電話対応","会議",1,0.5,TODAY,11.0),
+  mk("A社へ訪問・打合せ","山田商事株式会社","訪問","外出",2,2.0,TODAY,13.0),
+  mk("請求書データ記帳","佐藤工務店","記帳代行","社内",2,1.0,null,null),
+  mk("給与計算（6月分）","田中製作所","給与計算","社内",2,1.0,null,null),
+  mk("年末調整 案内資料の準備","鈴木リース株式会社","資料作成","社内",3,0.5,null,null),
+  mk("4月度 仕訳の修正対応","佐藤工務店","記帳代行","社内",1,1.0,null,null),
+  mk("決算準備 残高確認","株式会社グリーンフーズ","決算準備","社内",1,2.0,null,null),
+  mk("領収書の整理・スキャン","田中製作所","記帳代行","社内",3,0.5,null,null),
+  mk("顧問先への月次報告メール","鈴木リース株式会社","資料作成","社内",2,0.5,null,null),
+  mk("源泉所得税の納付確認","山田商事株式会社","月次監査","社内",1,0.25,null,null),
+  mk("定例ミーティング（社内）","加納経営事務所","会議","会議",2,0.5,null,null),
 ];
-const PRI_LABEL = {1:"高",2:"中",3:"低"};
+function mk(title,acct,work,type,pri,est,date,start){
+  return {id:seq++,title,acct,work,type,pri,estPlan:est,assignedDate:date,start,
+    status:'todo',actualMin:0,runningSince:null};
+}
 
 // ===== 初期化 =====
 (function init(){
-  const accts = [...new Set(tasks.map(t=>t.acct))].sort();
-  const fa = document.getElementById('fAcct');
-  accts.forEach(a=>{const o=document.createElement('option');o.value=a;o.textContent=a;fa.appendChild(o);});
-  const fw = document.getElementById('fWork');
-  WORK_TYPES.forEach(w=>{const o=document.createElement('option');o.value=w;o.textContent=w;fw.appendChild(o);});
-  render();
+  const accts=[...new Set(tasks.map(t=>t.acct))].sort();
+  const fa=document.getElementById('fAcct'), dl=document.getElementById('acctList');
+  accts.forEach(a=>{
+    const o=document.createElement('option');o.value=a;o.textContent=a;fa.appendChild(o);
+    const o2=document.createElement('option');o2.value=a;dl.appendChild(o2);
+  });
+  renderDate(); render();
+  setInterval(tick,1000);   // 実行中タスクの実績を毎秒更新
 })();
 
-// ===== 日付ナビ（表示のみ）=====
-let dayOffset = 0;
-const BASE = new Date(2026,5,3);
-const WD = ["日","月","火","水","木","金","土"];
-function shiftDay(d){
-  dayOffset += d;
-  const dt = new Date(BASE); dt.setDate(dt.getDate()+dayOffset);
-  document.getElementById('curDate').textContent =
-    `${dt.getFullYear()}/${dt.getMonth()+1}/${dt.getDate()}（${WD[dt.getDay()]}）`;
-}
+// ===== 日付 =====
+const WD=["日","月","火","水","木","金","土"];
+function parseKey(k){const[y,m,d]=k.split('-').map(Number);return new Date(y,m-1,d);}
+function fmtKey(dt){const m=String(dt.getMonth()+1).padStart(2,'0'),d=String(dt.getDate()).padStart(2,'0');return `${dt.getFullYear()}-${m}-${d}`;}
+function shiftDay(n){const dt=parseKey(curKey);dt.setDate(dt.getDate()+n);curKey=fmtKey(dt);renderDate();render();}
+function renderDate(){const dt=parseKey(curKey);document.getElementById('curDate').textContent=`${dt.getFullYear()}/${dt.getMonth()+1}/${dt.getDate()}（${WD[dt.getDay()]}）`;}
+
+// ===== 時刻ユーティリティ =====
+function fmtHour(h){const hh=Math.floor(h+1e-6);const mm=Math.round((h-hh)*60);return `${hh}:${String(mm).padStart(2,'0')}`;}
+function snap(h){return Math.round(h/STEP)*STEP;}
 
 // ===== レンダリング =====
 function render(){
-  const fAcct=val('fAcct'), fWork=val('fWork'), fPri=val('fPri'), fText=val('fText').trim();
-  // --- left ---
-  const left = document.getElementById('leftBody');
-  left.innerHTML='';
-  const unassigned = tasks.filter(t=>t.slot===null && !t.done).filter(t=>
-    (!fAcct||t.acct===fAcct)&&(!fWork||t.work===fWork)&&(!fPri||String(t.pri)===fPri)&&
-    (!fText||t.title.includes(fText)));
-  unassigned.sort((a,b)=>a.pri-b.pri);
-  if(!unassigned.length) left.innerHTML='<div class="empty">該当タスクなし</div>';
-  unassigned.forEach(t=>left.appendChild(taskCard(t)));
-  document.getElementById('leftCount').textContent = unassigned.length;
-  document.getElementById('pillUnassigned').textContent = tasks.filter(t=>t.slot===null&&!t.done).length;
-
-  // --- right timeline ---
-  const tl = document.getElementById('timeline'); tl.innerHTML='';
-  HOURS.forEach(h=>{
-    const slot=document.createElement('div'); slot.className='slot';
-    const hr=document.createElement('div'); hr.className='hr'; hr.textContent=`${h}:00`;
-    const drop=document.createElement('div'); drop.className='drop'; drop.dataset.slot=h;
-    drop.addEventListener('dragover',e=>{e.preventDefault();drop.classList.add('over');});
-    drop.addEventListener('dragleave',()=>drop.classList.remove('over'));
-    drop.addEventListener('drop',e=>{e.preventDefault();drop.classList.remove('over');
-      const id=+e.dataTransfer.getData('id'); assign(id,h);});
-    tasks.filter(t=>t.slot===h).sort((a,b)=>a.pri-b.pri).forEach(t=>drop.appendChild(schedCard(t)));
-    slot.appendChild(hr); slot.appendChild(drop); tl.appendChild(slot);
-  });
-  const assigned = tasks.filter(t=>t.slot!==null);
-  document.getElementById('rightCount').textContent=assigned.length;
-  document.getElementById('pillToday').textContent=assigned.length;
-  document.getElementById('sumCount').textContent=assigned.length;
-  const totEst=assigned.reduce((s,t)=>s+ (+t.est||0),0);
-  document.getElementById('sumEst').textContent=totEst.toFixed(1)+'h';
-  document.getElementById('sumDone').textContent=assigned.filter(t=>t.done).length;
-  const remain=8-totEst;
-  const rEl=document.getElementById('sumRemain');
-  rEl.textContent=(remain>=0? '残 '+remain.toFixed(1)+'h':'超過 '+Math.abs(remain).toFixed(1)+'h');
-  rEl.className='v'+(remain<0?' over':'');
-  document.getElementById('sumEst').className='v'+(totEst>8?' over':'');
-
-  // left drop (戻す)
+  renderLeft(); renderTimeline(); renderSummary();
+  // 左リストへドロップ（割当解除）
   const lb=document.getElementById('leftBody');
   lb.ondragover=e=>{e.preventDefault();lb.classList.add('over');};
   lb.ondragleave=()=>lb.classList.remove('over');
-  lb.ondrop=e=>{e.preventDefault();lb.classList.remove('over');const id=+e.dataTransfer.getData('id');assign(id,null);};
+  lb.ondrop=e=>{e.preventDefault();lb.classList.remove('over');unassign(+e.dataTransfer.getData('id'));};
 }
 function val(id){return document.getElementById(id).value;}
 
-// ===== カード生成 =====
+function leftTasks(){
+  const fType=val('fType'),fAcct=val('fAcct'),fPri=val('fPri'),fText=val('fText').trim();
+  // 未割当 ＋ 前日以前に中断され未完了（＝翌日に繰越）
+  let list=tasks.filter(t=>
+    (t.assignedDate===null && t.status!=='done') ||
+    (t.status==='paused' && t.assignedDate!==null && t.assignedDate<curKey)
+  );
+  list=list.filter(t=>(!fType||t.type===fType)&&(!fAcct||t.acct===fAcct)&&(!fPri||String(t.pri)===fPri)&&(!fText||t.title.includes(fText)));
+  const sort=val('fSort');
+  list.sort((a,b)=> sort==='est'? b.estPlan-a.estPlan
+    : sort==='type'? a.type.localeCompare(b.type,'ja')
+    : sort==='acct'? a.acct.localeCompare(b.acct,'ja')
+    : a.pri-b.pri);
+  return list;
+}
+function renderLeft(){
+  const left=document.getElementById('leftBody');left.innerHTML='';
+  const list=leftTasks();
+  if(!list.length) left.innerHTML='<div class="empty">該当タスクなし</div>';
+  list.forEach(t=>left.appendChild(taskCard(t)));
+  document.getElementById('leftCount').textContent=list.length;
+  document.getElementById('pillUnassigned').textContent=tasks.filter(t=>t.assignedDate===null&&t.status!=='done').length;
+}
 function taskCard(t){
+  const carry = t.status==='paused' && t.assignedDate!==null && t.assignedDate<curKey;
   const d=document.createElement('div');
   d.className=`task p${t.pri}`; d.draggable=true;
+  // 時刻割当セレクト（スマホ用）
+  let opts='<option value="">時刻…</option>';
+  for(let h=START_H;h<=END_H-STEP;h+=STEP) opts+=`<option value="${h}">${fmtHour(h)}</option>`;
   d.innerHTML=`
-    <div class="t-top"><div>
-      <div class="t-title">${esc(t.title)}</div>
-      <div class="t-acct">🏢 ${esc(t.acct)}</div>
-    </div></div>
+    <div class="t-title">${esc(t.title)}</div>
+    <div class="t-acct">🏢 ${esc(t.acct)}</div>
     <div class="t-meta">
+      <span class="badge type-${t.type}">${t.type}</span>
       <span class="badge work">${esc(t.work)}</span>
       <span class="badge pri-${t.pri}">優先:${PRI_LABEL[t.pri]}</span>
-      <span class="est"><label>予定</label>
-        <input type="number" step="0.5" min="0" value="${t.est}" onchange="setEst(${t.id},this.value)"><span>h</span></span>
-    </div>`;
-  d.addEventListener('dragstart',e=>{e.dataTransfer.setData('id',t.id);d.classList.add('dragging');});
-  d.addEventListener('dragend',()=>d.classList.remove('dragging'));
-  return d;
-}
-function schedCard(t){
-  const d=document.createElement('div');
-  d.className=`sched p${t.pri}${t.done?' done':''}`; d.draggable=true;
-  d.innerHTML=`
-    <div><div class="s-title">${esc(t.title)}</div>
-      <div class="s-acct">🏢 ${esc(t.acct)}・${esc(t.work)}</div></div>
-    <div class="s-right">
-      <span class="s-dur">${(+t.est).toFixed(1)}h</span>
-      <div class="s-act">
-        <button title="完了/未完了" onclick="toggleDone(${t.id})">${t.done?'↩︎':'✓'}</button>
-        <button title="リストへ戻す" onclick="assign(${t.id},null)">✕</button>
-      </div>
+      ${carry?'<span class="badge carry">前日から中断</span>':''}
+    </div>
+    <div class="t-foot">
+      <span class="est"><label>予定</label><input type="number" step="0.25" min="0" value="${t.estPlan}" onchange="setEst(${t.id},this.value)"><span>h</span></span>
+      <select class="assign-sel" onchange="assignAt(${t.id},this.value)">${opts}</select>
+      <button class="mini" onclick="dup(${t.id})">複製</button>
     </div>`;
   d.addEventListener('dragstart',e=>{e.dataTransfer.setData('id',t.id);d.classList.add('dragging');});
   d.addEventListener('dragend',()=>d.classList.remove('dragging'));
   return d;
 }
 
+function dayTasks(){return tasks.filter(t=>t.assignedDate===curKey && t.start!==null);}
+function renderTimeline(){
+  const tl=document.getElementById('timeline');tl.innerHTML='';
+  tl.style.height=((END_H-START_H)*PX)+'px';
+  // グリッド線
+  for(let h=START_H;h<=END_H;h++){
+    const g=document.createElement('div');g.className='gl';g.style.top=((h-START_H)*PX)+'px';
+    g.innerHTML=`<span class="lbl">${h}:00</span>`;tl.appendChild(g);
+    if(h<END_H)[0.25,0.5,0.75].forEach(q=>{const q1=document.createElement('div');q1.className='gl q';q1.style.top=((h-START_H+q)*PX)+'px';tl.appendChild(q1);});
+  }
+  // レーン計算（重なり回避）
+  const items=dayTasks().slice().sort((a,b)=>a.start-b.start);
+  const laneEnd=[];
+  items.forEach(t=>{
+    const end=t.start+t.estPlan;
+    let lane=laneEnd.findIndex(e=>e<=t.start+1e-6);
+    if(lane===-1){lane=laneEnd.length;laneEnd.push(end);}else laneEnd[lane]=end;
+    t._lane=lane;
+  });
+  const lanes=Math.max(1,laneEnd.length);
+  items.forEach(t=>tl.appendChild(schedCard(t,lanes)));
+  // タイムラインへドロップ
+  tl.ondragover=e=>{e.preventDefault();};
+  tl.ondrop=e=>{
+    e.preventDefault();
+    const id=+e.dataTransfer.getData('id');if(!id)return;
+    const rect=tl.getBoundingClientRect();
+    let h=snap(START_H+(e.clientY-rect.top)/PX);
+    const t=tasks.find(x=>x.id===id);
+    h=Math.max(START_H,Math.min(h,END_H-(t?t.estPlan:0.25)));
+    place(id,h);
+  };
+  document.getElementById('rightCount').textContent=items.length;
+  document.getElementById('pillToday').textContent=items.length;
+}
+function schedCard(t,lanes){
+  const d=document.createElement('div');
+  d.className=`sched p${t.pri} ${t.status}`;d.draggable=true;
+  const top=(t.start-START_H)*PX;
+  const h=Math.max(t.estPlan*PX-3,22);
+  const gap=4, w=`calc(${(100/lanes).toFixed(4)}% - ${gap}px)`;
+  d.style.cssText=`top:${top}px;height:${h}px;left:calc(${(t._lane*100/lanes).toFixed(4)}% + 1px);width:${w};`;
+  const stLabel={todo:'未着手',running:'実行中',paused:'中断中',done:'完了'}[t.status];
+  const act = t.status==='done'
+    ? `<button onclick="reopen(${t.id})">取消</button>`
+    : (t.status==='running'
+        ? `<button class="pa" onclick="pause(${t.id})">中断</button><button class="fin" onclick="finish(${t.id})">完了</button>`
+        : `<button class="go" onclick="start(${t.id})">${t.status==='paused'?'再開':'開始'}</button><button class="fin" onclick="finish(${t.id})">完了</button>`);
+  const compact=h<54;
+  d.innerHTML=`
+    <div class="s-title">${esc(t.title)}</div>
+    ${compact?'':`<div class="s-sub">${esc(t.acct)}・${esc(t.work)}</div>`}
+    <div><span class="s-status st-${t.status}">${stLabel}</span>
+      <span class="s-time">${fmtHour(t.start)}〜${fmtHour(t.start+t.estPlan)}・予${t.estPlan}h<span id="act-${t.id}">${actualSuffix(t)}</span></span></div>
+    <div class="s-act">${act}<button onclick="dup(${t.id})">複製</button><button onclick="unassign(${t.id})">戻す</button></div>`;
+  d.addEventListener('dragstart',e=>{e.dataTransfer.setData('id',t.id);});
+  return d;
+}
+function actualSuffix(t){const m=liveMin(t);return m>0?`／実${(m/60).toFixed(2)}h`:'';}
+function liveMin(t){let m=t.actualMin;if(t.status==='running'&&t.runningSince)m+=(Date.now()-t.runningSince)/60000;return m;}
+
+function renderSummary(){
+  const items=dayTasks();
+  const est=items.reduce((s,t)=>s+(+t.estPlan||0),0);
+  const act=items.reduce((s,t)=>s+liveMin(t),0)/60;
+  document.getElementById('sumCount').textContent=items.length;
+  document.getElementById('sumEst').textContent=est.toFixed(2)+'h';
+  document.getElementById('sumAct').textContent=act.toFixed(2)+'h';
+  document.getElementById('sumDone').textContent=items.filter(t=>t.status==='done').length;
+  const remain=8-est, rEl=document.getElementById('sumRemain');
+  rEl.textContent=remain>=0?'残 '+remain.toFixed(2)+'h':'超過 '+Math.abs(remain).toFixed(2)+'h';
+  rEl.className='v'+(remain<0?' over':'');
+  document.getElementById('sumEst').className='v'+(est>8?' over':'');
+}
+function tick(){
+  let any=false;
+  tasks.forEach(t=>{if(t.status==='running'){any=true;const el=document.getElementById('act-'+t.id);if(el)el.textContent=actualSuffix(t);}});
+  if(any){const items=dayTasks();const act=items.reduce((s,t)=>s+liveMin(t),0)/60;document.getElementById('sumAct').textContent=act.toFixed(2)+'h';}
+}
+
 // ===== 操作 =====
-function assign(id,slot){const t=tasks.find(x=>x.id===id);if(t){t.slot=slot;if(slot===null)t.done=false;}render();}
-function setEst(id,v){const t=tasks.find(x=>x.id===id);if(t)t.est=+v||0;render();}
-function toggleDone(id){const t=tasks.find(x=>x.id===id);if(t)t.done=!t.done;render();}
+function place(id,h){const t=tasks.find(x=>x.id===id);if(t){t.assignedDate=curKey;t.start=h;}render();}
+function assignAt(id,v){if(v==='')return;place(id,+v);}
+function unassign(id){const t=tasks.find(x=>x.id===id);if(t){t.assignedDate=null;t.start=null;}render();}
+function setEst(id,v){const t=tasks.find(x=>x.id===id);if(t)t.estPlan=Math.max(0,snap(+v||0));render();}
+function start(id){const t=tasks.find(x=>x.id===id);if(t){t.status='running';t.runningSince=Date.now();}render();}
+function pause(id){const t=tasks.find(x=>x.id===id);if(t&&t.status==='running'){t.actualMin+=(Date.now()-t.runningSince)/60000;t.runningSince=null;t.status='paused';}render();}
+function finish(id){const t=tasks.find(x=>x.id===id);if(t){if(t.status==='running'&&t.runningSince){t.actualMin+=(Date.now()-t.runningSince)/60000;t.runningSince=null;}t.status='done';}render();}
+function reopen(id){const t=tasks.find(x=>x.id===id);if(t){t.status='paused';}render();}
+function dup(id){const s=tasks.find(x=>x.id===id);if(!s)return;
+  const c=mk(s.title+'（複製）',s.acct,s.work,s.type,s.pri,s.estPlan,null,null);
+  tasks.push(c);render();}
+
+// ===== 新規タスク =====
+function openNew(){document.getElementById('modalBg').classList.add('show');document.getElementById('mTitle').focus();}
+function closeNew(){document.getElementById('modalBg').classList.remove('show');
+  ['mTitle','mAcct','mWork'].forEach(i=>document.getElementById(i).value='');document.getElementById('mEst').value='1.0';}
+function addTask(){
+  const title=val('mTitle').trim();if(!title){alert('件名を入力してください');return;}
+  const t=mk(title,val('mAcct').trim()||'（未設定）',val('mWork').trim()||'その他',val('mType'),+val('mPri'),Math.max(0,snap(+val('mEst')||0.25)),null,null);
+  tasks.push(t);closeNew();render();
+}
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 </script>
 </body>
