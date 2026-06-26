@@ -126,6 +126,51 @@
     .panel-body.tl-body{max-height:70vh;}
     .panel-head .hint{display:none;}
   }
+  /* ===== ビュー切替 ===== */
+  .view-toggle{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden;}
+  .vbtn{border:none;background:#fff;color:var(--ink);padding:6px 14px;font-size:12.5px;font-weight:700;cursor:pointer;border-right:1px solid var(--line);}
+  .vbtn:last-child{border-right:none;}
+  .vbtn.active{background:var(--accent);color:#fff;}
+  .today-btn{border:1px solid var(--line);background:#fff;border-radius:5px;padding:0 10px;height:28px;font-size:12px;cursor:pointer;color:var(--ink);margin-left:4px;}
+  /* ===== 週ビュー ===== */
+  .weekwrap{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;padding:14px 18px;}
+  .wk-col{background:#fff;border:1px solid var(--line);border-radius:8px;overflow:hidden;min-height:220px;display:flex;flex-direction:column;}
+  .wk-col.wknd{background:#fcfdff;}
+  .wk-head{padding:7px 8px;border-bottom:1px solid var(--line);background:#fafcfe;cursor:pointer;text-align:center;}
+  .wk-head.today{background:var(--accent);color:#fff;}
+  .wk-head.wknd .wk-wd{color:var(--p1);}
+  .wk-wd{font-size:11px;font-weight:700;margin-right:4px;}
+  .wk-d{font-size:13px;font-weight:800;}
+  .wk-total{display:block;font-size:10.5px;color:var(--muted);margin-top:2px;}
+  .wk-head.today .wk-total{color:#e6f0fb;}
+  .wk-body{padding:6px;display:flex;flex-direction:column;gap:6px;overflow-y:auto;max-height:62vh;}
+  .wk-empty{color:#c4cdd9;text-align:center;font-size:18px;padding:10px 0;}
+  .wk-task{border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:6px;padding:5px 7px;background:#fff;}
+  .wk-task.p1{border-left-color:var(--p1);} .wk-task.p2{border-left-color:var(--p2);} .wk-task.p3{border-left-color:var(--p3);}
+  .wk-task.done{opacity:.6;} .wk-task.running{box-shadow:0 0 0 2px rgba(11,122,59,.35);}
+  .wk-time{font-size:10px;color:var(--muted);font-weight:600;}
+  .wk-title{font-size:12px;font-weight:700;line-height:1.25;margin:1px 0;}
+  .wk-task.done .wk-title{text-decoration:line-through;}
+  .wk-sub{font-size:10px;color:var(--accent);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  /* ===== 月ビュー ===== */
+  .monthwrap{padding:14px 18px;}
+  .m-dow{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px;}
+  .m-dow-c{text-align:center;font-size:11.5px;font-weight:700;color:var(--muted);}
+  .m-dow-c:nth-child(6),.m-dow-c:nth-child(7){color:var(--p1);}
+  .m-week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px;}
+  .mcell{background:#fff;border:1px solid var(--line);border-radius:7px;min-height:96px;padding:5px 6px;cursor:pointer;display:flex;flex-direction:column;gap:2px;}
+  .mcell.out{background:#f7f9fc;color:#aab4c2;}
+  .mcell.wknd{background:#fcfdff;}
+  .mcell.today{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);}
+  .m-top{display:flex;justify-content:space-between;align-items:center;}
+  .m-day{font-size:12.5px;font-weight:800;}
+  .mcell.out .m-day{font-weight:600;}
+  .m-cnt{font-size:10px;color:var(--accent);font-weight:700;}
+  .m-hrs{font-size:10px;color:var(--muted);}
+  .mi{font-size:10px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:6px;border-left:3px solid var(--accent);border-radius:2px;}
+  .mi.p1{border-left-color:var(--p1);} .mi.p2{border-left-color:var(--p2);} .mi.p3{border-left-color:var(--p3);}
+  .m-more{font-size:9.5px;color:var(--muted);}
+  @media (max-width:840px){ .weekwrap{grid-template-columns:1fr;} .mcell{min-height:60px;} .mi{display:none;} }
 </style>
 </head>
 <body>
@@ -138,16 +183,23 @@
 </header>
 
 <div class="toolbar">
-  <h1>今日のタスク割当</h1>
+  <h1>タスク管理</h1>
+  <div class="view-toggle">
+    <button class="vbtn active" id="vbDay" onclick="setView('day')">日</button>
+    <button class="vbtn" id="vbWeek" onclick="setView('week')">週</button>
+    <button class="vbtn" id="vbMonth" onclick="setView('month')">月</button>
+  </div>
   <div class="date-nav">
-    <button onclick="shiftDay(-1)">‹</button>
+    <button onclick="shiftPeriod(-1)">‹</button>
     <span class="cur" id="curDate"></span>
-    <button onclick="shiftDay(1)">›</button>
+    <button onclick="shiftPeriod(1)">›</button>
+    <button class="today-btn" onclick="goToday()">今日</button>
   </div>
   <span class="spacer"></span>
+  <button class="btn ghost" id="routineBtn" onclick="routineGenerate()">↻ ルーティン生成</button>
   <button class="btn" onclick="openNew()">＋ 新規タスク</button>
-  <span class="pill">未割当 <b id="pillUnassigned">0</b></span>
-  <span class="pill">本日 <b id="pillToday">0</b></span>
+  <span class="pill" id="pillU">未割当 <b id="pillUnassigned">0</b></span>
+  <span class="pill" id="pillT">本日 <b id="pillToday">0</b></span>
 </div>
 
 <div class="wrap">
@@ -196,6 +248,9 @@
     </div>
   </section>
 </div>
+<div class="weekwrap" id="weekView" style="display:none"></div>
+<div class="monthwrap" id="monthView" style="display:none"></div>
+
 <div class="note">※ 仕様合意用のモックアップです（サンプルデータ・Salesforce未接続）。①開始/中断/完了 ②新規登録 ③種別ソート ④複製 ⑤0.25h単位 ⑥時間長さ表示 を反映。スマホでもスケジュールが縦に表示され、カードの「時刻」から割当できます（ドラッグはPC推奨）。</div>
 
 <!-- 新規タスク モーダル -->
@@ -244,6 +299,17 @@ let tasks=[
   mk("顧問先への月次報告メール","鈴木リース株式会社","資料作成","社内",2,0.5,null,null),
   mk("源泉所得税の納付確認","山田商事株式会社","月次監査","社内",1,0.25,null,null),
   mk("定例ミーティング（社内）","加納経営事務所","会議","会議",2,0.5,null,null),
+  // --- 週/月ビュー用：同月の他日付に割当 ---
+  mk("月次監査 B社","佐藤工務店","月次監査","社内",1,1.5,"2026-06-02",9.0),
+  mk("給与振込の準備","田中製作所","給与計算","社内",2,1.0,"2026-06-02",13.0),
+  mk("決算打合せ","株式会社グリーンフーズ","決算準備","会議",1,1.0,"2026-06-04",10.0),
+  mk("C社へ訪問","鈴木リース株式会社","訪問","外出",2,2.0,"2026-06-04",14.0),
+  mk("記帳代行 まとめ","佐藤工務店","記帳代行","社内",2,1.5,"2026-06-05",9.5),
+  mk("源泉所得税の納付","山田商事株式会社","月次監査","社内",1,0.5,"2026-06-05",15.0),
+  mk("月初の入金確認","株式会社グリーンフーズ","記帳代行","社内",2,0.75,"2026-06-01",9.0),
+  mk("資料作成（翌週）","鈴木リース株式会社","資料作成","社内",3,1.0,"2026-06-10",11.0),
+  mk("月次報告（翌週）","田中製作所","資料作成","会議",2,1.0,"2026-06-12",13.0),
+  mk("月末決算チェック","山田商事株式会社","決算準備","社内",1,2.0,"2026-06-25",10.0),
 ];
 function mk(title,acct,work,type,pri,est,date,start){
   return {id:seq++,title,acct,work,type,pri,estPlan:est,assignedDate:date,start,
@@ -268,8 +334,64 @@ function init(){
 const WD=["日","月","火","水","木","金","土"];
 function parseKey(k){const[y,m,d]=k.split('-').map(Number);return new Date(y,m-1,d);}
 function fmtKey(dt){const m=String(dt.getMonth()+1).padStart(2,'0'),d=String(dt.getDate()).padStart(2,'0');return `${dt.getFullYear()}-${m}-${d}`;}
-function shiftDay(n){const dt=parseKey(curKey);dt.setDate(dt.getDate()+n);curKey=fmtKey(dt);renderDate();render();}
-function renderDate(){const dt=parseKey(curKey);document.getElementById('curDate').textContent=`${dt.getFullYear()}/${dt.getMonth()+1}/${dt.getDate()}（${WD[dt.getDay()]}）`;}
+let viewMode='day';
+function mondayOf(dt){const d=new Date(dt);d.setHours(0,0,0,0);const dow=(d.getDay()+6)%7;d.setDate(d.getDate()-dow);return d;}
+function setView(m){viewMode=m;document.querySelectorAll('.vbtn').forEach(b=>b.classList.remove('active'));document.getElementById(m==='day'?'vbDay':m==='week'?'vbWeek':'vbMonth').classList.add('active');render();}
+function goToday(){curKey=TODAY;render();}
+function shiftPeriod(n){const dt=parseKey(curKey);if(viewMode==='week')dt.setDate(dt.getDate()+n*7);else if(viewMode==='month')dt.setMonth(dt.getMonth()+n);else dt.setDate(dt.getDate()+n);curKey=fmtKey(dt);render();}
+function renderDate(){
+  const dt=parseKey(curKey);let label;
+  if(viewMode==='week'){const ws=mondayOf(dt),we=new Date(ws);we.setDate(we.getDate()+6);
+    label=`${ws.getFullYear()}/${ws.getMonth()+1}/${ws.getDate()}（${WD[ws.getDay()]}）– ${we.getMonth()+1}/${we.getDate()}（${WD[we.getDay()]}）`;}
+  else if(viewMode==='month'){label=`${dt.getFullYear()}年${dt.getMonth()+1}月`;}
+  else{label=`${dt.getFullYear()}/${dt.getMonth()+1}/${dt.getDate()}（${WD[dt.getDay()]}）`;}
+  document.getElementById('curDate').textContent=label;
+}
+const ST_MAP={todo:{cls:'todo',label:'未着手'},running:{cls:'running',label:'実行中'},paused:{cls:'paused',label:'中断中'},done:{cls:'done',label:'完了'}};
+function renderWeek(){
+  const ws=mondayOf(parseKey(curKey));const cont=document.getElementById('weekView');cont.innerHTML='';
+  for(let i=0;i<7;i++){
+    const d=new Date(ws);d.setDate(d.getDate()+i);const key=fmtKey(d);const wknd=d.getDay()===0||d.getDay()===6;
+    const list=tasks.filter(t=>t.assignedDate===key).sort((a,b)=>(a.start||0)-(b.start||0));
+    const total=list.reduce((s,t)=>s+(t.estPlan||0),0);
+    const col=document.createElement('div');col.className='wk-col'+(wknd?' wknd':'');
+    col.innerHTML=`<div class="wk-head${key===TODAY?' today':''}${wknd?' wknd':''}"><span class="wk-wd">${WD[d.getDay()]}</span><span class="wk-d">${d.getMonth()+1}/${d.getDate()}</span><span class="wk-total">${total>0?'計 '+total.toFixed(2)+'h':''}</span></div>`;
+    const body=document.createElement('div');body.className='wk-body';
+    if(!list.length)body.innerHTML='<div class="wk-empty">—</div>';
+    list.forEach(t=>{const st=ST_MAP[t.status]||ST_MAP.todo;const c=document.createElement('div');
+      c.className='wk-task p'+t.pri+(t.status==='done'?' done':'')+(t.status==='running'?' running':'');
+      c.innerHTML=`<div class="wk-time">${fmtHour(t.start)}〜${fmtHour(t.start+t.estPlan)}</div><div class="wk-title">${esc(t.title)}</div><div class="wk-sub">${esc(t.acct)}</div><span class="s-status st-${st.cls}">${st.label}</span>`;
+      body.appendChild(c);});
+    col.appendChild(body);cont.appendChild(col);
+  }
+}
+function renderMonth(){
+  const anchor=parseKey(curKey);const first=new Date(anchor.getFullYear(),anchor.getMonth(),1);const last=new Date(anchor.getFullYear(),anchor.getMonth()+1,0);
+  const gridStart=mondayOf(first);const gridEnd=mondayOf(last);gridEnd.setDate(gridEnd.getDate()+7);
+  const cont=document.getElementById('monthView');cont.innerHTML='';
+  const dh=document.createElement('div');dh.className='m-dow';["月","火","水","木","金","土","日"].forEach(h=>{const c=document.createElement('div');c.className='m-dow-c';c.textContent=h;dh.appendChild(c);});cont.appendChild(dh);
+  const cur=new Date(gridStart);
+  while(cur<gridEnd){
+    const wk=document.createElement('div');wk.className='m-week';
+    for(let i=0;i<7;i++){
+      const key=fmtKey(cur);const inMonth=cur.getMonth()===anchor.getMonth();const wknd=cur.getDay()===0||cur.getDay()===6;
+      const list=tasks.filter(t=>t.assignedDate===key).sort((a,b)=>(a.start||0)-(b.start||0));
+      const hrs=list.reduce((s,t)=>s+(t.estPlan||0),0);
+      const items=list.slice(0,3).map(t=>`<div class="mi p${t.pri}">${fmtHour(t.start)} ${esc(t.title)}</div>`).join('');
+      const more=list.length>3?`<div class="m-more">他 ${list.length-3}件</div>`:'';
+      const cell=document.createElement('div');cell.className='mcell'+(inMonth?'':' out')+(key===TODAY?' today':'')+(wknd?' wknd':'');
+      cell.innerHTML=`<div class="m-top"><span class="m-day">${cur.getDate()}</span><span class="m-cnt">${list.length>0?list.length+'件':''}</span></div><div class="m-hrs">${hrs>0?hrs.toFixed(1)+'h':''}</div>${items}${more}`;
+      wk.appendChild(cell);cur.setDate(cur.getDate()+1);
+    }
+    cont.appendChild(wk);
+  }
+}
+function routineGenerate(){
+  if(tasks.some(t=>t._routine)){alert('本日のルーティンは生成済みです（重複は自動スキップ）');return;}
+  const a=mk('入金処理（毎日）','株式会社グリーンフーズ','記帳代行','社内',2,0.5,null,null);a._routine=true;tasks.push(a);
+  const b=mk('日次残高チェック（毎日）','山田商事株式会社','月次監査','社内',1,0.25,null,null);b._routine=true;tasks.push(b);
+  render();alert('ルーティン生成: 2件のタスクを生成しました');
+}
 
 // ===== 時刻ユーティリティ =====
 function fmtHour(h){const hh=Math.floor(h+1e-6);const mm=Math.round((h-hh)*60);return `${hh}:${String(mm).padStart(2,'0')}`;}
@@ -277,6 +399,14 @@ function snap(h){return Math.round(h/STEP)*STEP;}
 
 // ===== レンダリング =====
 function render(){
+  renderDate();
+  const dayEl=document.querySelector('.wrap'), wkEl=document.getElementById('weekView'), moEl=document.getElementById('monthView');
+  dayEl.style.display=viewMode==='day'?'':'none';
+  wkEl.style.display=viewMode==='week'?'':'none';
+  moEl.style.display=viewMode==='month'?'':'none';
+  ['pillU','pillT','routineBtn'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display=viewMode==='day'?'':'none';});
+  if(viewMode==='week'){renderWeek();return;}
+  if(viewMode==='month'){renderMonth();return;}
   renderLeft(); renderTimeline(); renderSummary();
   // 左リストへドロップ（割当解除）
   const lb=document.getElementById('leftBody');
